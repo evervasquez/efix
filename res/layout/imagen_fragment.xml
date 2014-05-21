@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget28"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout 
+    android:layout_width="fill_parent"
+    android:layout_height="0dp"
+    android:layout_weight="1"
+    android:orientation="vertical">
+    <RadioGroup
+        android:id="@+id/rgrp01"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <RadioButton
+            android:id="@+id/radbtnFull"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/txt_tomaImagen" >
+        </RadioButton>
+
+        <RadioButton
+            android:id="@+id/radbtnGall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/txt_obtenerImagen" >
+        </RadioButton>
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/btnPic"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        style="@style/btnStyleShakespeare"
+        android:text="@string/btn_obtener" />
+</LinearLayout>
+
+<LinearLayout 
+    android:layout_width="fill_parent"
+    android:layout_height="0dp"
+    android:background="@android:color/darker_gray"
+    android:layout_marginBottom="10dp"
+    android:layout_weight="2">
+    <ImageView
+        android:id="@+id/imgView"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:contentDescription="@string/app_name" >
+    </ImageView>
+</LinearLayout>
+
+</LinearLayout>
