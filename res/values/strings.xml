@@ -1,10 +1,29 @@
-<?xml version="1.0" encoding="utf-8"?>
+
 <resources>
-    <string name="hello">Hello World, Camera!</string>
+    
     <string name="app_name">EFIX</string>
     <string name="btn_obtener">Tomar Foto</string>
     <string name="rd_txt">Vista previa</string>
     <string name="txt_tomaImagen">Imagen Completa</string>
     <string name="txt_obtenerImagen">Galería</string>
     <string name="action_settings">Configuracion</string>
+      <string name="pre_url_title">Url de Servidor</string>
+      <string name="pre_summary">Ingrese una dirección del servidor de la aplicación</string>
+      <string name="pre_url_dialog">Dirección del servidor</string>
+      <string name="pre_url">Ingrese url del Servidor</string>
+      
+      <string name="show_dialog">Show Dialog</string>
+    <string name="dialog_message">This is where a sample message could go. We could have just used an AlertDialog perhaps, but we want to show off the ability of setting a custom view while keeping other standard dialog elements. For example, we are using the standard Title and Yes/No buttons typically found in AlertDialog. To make things fun, we\'ll throw in a RatingBar. Try rotating your phone!</string>
+    <string name="dialog_title">Información requerida</string>
+    <string name="dialog_positive_text">Yes</string>
+    <string name="dialog_positive_toast_message">You clicked Yes!</string>
+    <string name="dialog_negative_text">No</string>
+    <string name="dialog_text">Para usar la aplicación tiene que activar su GPS, desea hacerlo?</string>
+    <string name="dialog_negative_toast_message">You clicked No...</string>
+    
+    <string-array name="sp_averias">
+        <item >Software</item>
+        <item >Redes</item>
+        <item >Hardware</item>
+    </string-array>
 </resources>
