@@ -278,14 +278,12 @@ public class ImagenFragment extends Fragment implements LocationListener {
 
 	@Override
 	public void onProviderEnabled(String provider) {
-		Toast.makeText(getActivity().getApplicationContext(), "Enabled",
-				Toast.LENGTH_SHORT).show();
+
 	}
 
 	@Override
 	public void onStatusChanged(String provider, int status, Bundle extras) {
-		Toast.makeText(getActivity().getApplicationContext(), "status",
-				Toast.LENGTH_SHORT).show();
+
 	}
 
 	public String getUrl() {

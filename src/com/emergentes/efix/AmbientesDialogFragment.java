@@ -27,6 +27,7 @@ import android.widget.Toast;
 
 import com.emergentes.efix.model.Ambientes;
 import com.emergentes.efix.model.Aulas;
+import com.emergentes.efix.model.Incidencias;
 import com.emergentes.efix.utils.Connection;
 import com.emergentes.efix.utils.SubirImagen;
 
@@ -34,20 +35,23 @@ public class AmbientesDialogFragment extends DialogFragment implements
 		OnItemSelectedListener {
 
 	private static final String KEY_SAVE_RATING_BAR_VALUE = "KEY_SAVE_RATING_BAR_VALUE";
-	private Spinner sp_averias, sp_ambientes, sp_aulas;
+	private Spinner sp_averias, sp_ambientes, sp_aulas, sp_incidencia;
 	private static JSONArray json_content;
 	public ArrayList<Ambientes> datosambiente;
 	public ArrayList<Aulas> datosaulas;
+	public ArrayList<Incidencias> datosIncidencia;
 	private Button btn_enviar;
 	private EditText txt_descripcion;
 	AdapterView<?> adapview = null;
 	public ProgressDialog pd;
-	public String id_aula;
+	public String id_aula,id_incidencia;
 	public String id_averia;
 	public static String nombreImagen;
 	private String archphp = "upload.php";
+	private int count = 0;
 
-	public static AmbientesDialogFragment newInstance(JSONArray jsonMainNode,String imagen) {
+	public static AmbientesDialogFragment newInstance(JSONArray jsonMainNode,
+			String imagen) {
 		AmbientesDialogFragment frag = new AmbientesDialogFragment();
 		AmbientesDialogFragment.json_content = jsonMainNode;
 		AmbientesDialogFragment.nombreImagen = imagen;
@@ -64,6 +68,7 @@ public class AmbientesDialogFragment extends DialogFragment implements
 
 		sp_averias = (Spinner) view.findViewById(R.id.sp_averia);
 		sp_ambientes = (Spinner) view.findViewById(R.id.sp_ambiente);
+		sp_incidencia = (Spinner) view.findViewById(R.id.sp_incidencia);
 		txt_descripcion = (EditText) view.findViewById(R.id.txt_info);
 
 		sp_aulas = (Spinner) view.findViewById(R.id.sp_aula);
@@ -73,20 +78,27 @@ public class AmbientesDialogFragment extends DialogFragment implements
 		ArrayAdapter sp_adpter = ArrayAdapter.createFromResource(getActivity()
 				.getApplicationContext(), R.array.sp_averias,
 				R.layout.spinner_item);
-		sp_adpter
-				.setDropDownViewResource(R.layout.spiner_lista);
+		sp_adpter.setDropDownViewResource(R.layout.spiner_lista);
 		sp_averias.setAdapter(sp_adpter);
 
 		alertDialogBuilder.setView(view);
 		alertDialogBuilder.setTitle(getString(R.string.dialog_title));
-
 		String[] datosaa = Json_Array(AmbientesDialogFragment.json_content);
+
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity()
 				.getApplicationContext(), R.layout.spinner_item, datosaa);
 		adapter.setDropDownViewResource(R.layout.spiner_lista);
 		sp_ambientes.setAdapter(adapter);
 
 		sp_ambientes.setOnItemSelectedListener(this);
+
+		// adapter de sp_incidencia
+		ArrayAdapter adapter_incidencia = ArrayAdapter.createFromResource(
+				getActivity().getApplicationContext(), R.array.sp_incidencias,
+				R.layout.spinner_item);
+
+		adapter_incidencia.setDropDownViewResource(R.layout.spiner_lista);
+		sp_incidencia.setAdapter(adapter_incidencia);
 
 		sp_aulas.setOnItemSelectedListener(new OnItemSelectedListener() {
 
@@ -96,6 +108,7 @@ public class AmbientesDialogFragment extends DialogFragment implements
 				// TODO Auto-generated method stub
 				adapview = arg0;
 				id_aula = datosaulas.get(arg2).getId();
+				sp_averias.setOnItemSelectedListener(new CustomOnItemSelectedListener());
 			}
 
 			@Override
@@ -104,14 +117,15 @@ public class AmbientesDialogFragment extends DialogFragment implements
 
 			}
 		});
-
-		sp_averias.setOnItemSelectedListener(new OnItemSelectedListener() {
+		
+		/*sp_averias.setOnItemSelectedListener(new OnItemSelectedListener() {
 
 			@Override
 			public void onItemSelected(AdapterView<?> arg0, View arg1,
 					int arg2, long arg3) {
-				// TODO Auto-generated method stub
+
 				id_averia = arg2 + 1 + "";
+				new IncidenciasAsyncTask(id_averia, sp_incidencia).execute();
 			}
 
 			@Override
@@ -119,7 +133,7 @@ public class AmbientesDialogFragment extends DialogFragment implements
 				// TODO Auto-generated method stub
 
 			}
-		});
+		});*/
 
 		btn_enviar.setOnClickListener(new OnClickListener() {
 
@@ -130,16 +144,15 @@ public class AmbientesDialogFragment extends DialogFragment implements
 								+ " - descripcion" + txt_descripcion.getText());
 				String info = txt_descripcion.getText().toString();
 
-				
-
 				if (ImagenFragment.file.exists()) {
-					
-					 SubirImagen nuevaTarea = new
-					 SubirImagen(getUrl()+archphp,
-					 ImagenFragment.file,getActivity()); nuevaTarea.execute();
-					 
-					 new infoAsyncTask(id_aula, id_averia, info,
-							 AmbientesDialogFragment.nombreImagen).execute();
+
+					SubirImagen nuevaTarea = new SubirImagen(
+							getUrl() + archphp, ImagenFragment.file,
+							getActivity());
+					nuevaTarea.execute();
+
+					new infoAsyncTask(id_aula, id_averia, info,
+							AmbientesDialogFragment.nombreImagen).execute();
 				} else {
 					Toast.makeText(getActivity().getApplicationContext(),
 							"No se ha realizado la foto", Toast.LENGTH_SHORT)
@@ -330,6 +343,8 @@ public class AmbientesDialogFragment extends DialogFragment implements
 						+ URLEncoder.encode(id_aula, "UTF-8");
 				param += "&" + URLEncoder.encode("id_averia", "UTF-8") + "="
 						+ URLEncoder.encode(id_averia, "UTF-8");
+				param += "&" + URLEncoder.encode("id_incidencia", "UTF-8") + "="
+						+ URLEncoder.encode(id_incidencia, "UTF-8");
 				param += "&" + URLEncoder.encode("descripcion", "UTF-8") + "="
 						+ URLEncoder.encode(descripcion, "UTF-8");
 				param += "&" + URLEncoder.encode("nameimagen", "UTF-8") + "="
@@ -425,4 +440,132 @@ public class AmbientesDialogFragment extends DialogFragment implements
 
 	}
 
+	// getIncidencias
+	private class IncidenciasAsyncTask extends AsyncTask<String, Void, Void> {
+		private String datos;
+		private Connection emergentesUtil;
+		private String content;
+		private String archivophp = "getIncidencia.php";
+		private String id;
+		private Spinner s_incidencia;
+		private String[] indicencias;
+		ArrayAdapter<String> adapter_incidencias = null;
+
+		public IncidenciasAsyncTask(String id, Spinner incidencia) {
+			this.id = id;
+			this.s_incidencia = incidencia;
+		}
+
+		@Override
+		protected void onPreExecute() {
+			pd = ProgressDialog.show(getActivity(), "",
+					"Obteniendo Incidencias...", true);
+			try {
+				String param = URLEncoder.encode("tipo_averia", "UTF-8") + "="
+						+ URLEncoder.encode(this.id, "UTF-8");
+				datos = param;
+				Log.v("URL", datos);
+			} catch (java.io.UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		@Override
+		protected Void doInBackground(String... arg0) {
+			emergentesUtil = new Connection(getActivity()
+					.getApplicationContext(), getUrl() + archivophp, datos);
+			this.content = emergentesUtil.getResponse();
+			return null;
+
+		}
+
+		@Override
+		protected void onPostExecute(Void result) {
+			String OutputData = "";
+			JSONObject jsonResponse = null;
+			ArrayList<String> datosUsusario;
+
+			Log.v("getIncidencia", content);
+
+			pd.dismiss();
+
+			try {
+
+				jsonResponse = new JSONObject(this.content);
+				JSONArray jsonMainNode = jsonResponse
+						.optJSONArray("incidencia");
+
+				// Toast.makeText(getActivity().getApplicationContext(),
+				// jsonMainNode+"", Toast.LENGTH_SHORT).show();
+
+				int lengthJsonArr = jsonMainNode.length();
+				indicencias = new String[lengthJsonArr];
+
+				if (lengthJsonArr > 0) {
+
+					datosIncidencia = new ArrayList<Incidencias>();
+
+					for (int i = 0; i < lengthJsonArr; i++) {
+						JSONObject jsonChildNode;
+
+						try {
+							jsonChildNode = jsonMainNode.getJSONObject(i);
+
+							datosambiente.add(new Ambientes(jsonChildNode
+									.optString("id_incidencia").toString(),
+									jsonChildNode.optString("incidencia")
+											.toString()));
+
+							indicencias[i] = jsonChildNode.optString(
+									"incidencia").toString();
+
+						} catch (JSONException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+
+					}
+
+					adapter_incidencias = new ArrayAdapter<String>(
+							getActivity().getApplicationContext(),
+							R.layout.spinner_item, indicencias);
+					adapter_incidencias
+							.setDropDownViewResource(R.layout.spiner_lista);
+					s_incidencia.setAdapter(adapter_incidencias);
+
+				} else {
+					Toast.makeText(getActivity().getApplicationContext(),
+							"hubo un error al descargar los datos",
+							Toast.LENGTH_SHORT).show();
+				}
+
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+	}
+	
+	class CustomOnItemSelectedListener implements OnItemSelectedListener{
+
+		@Override
+		public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2,
+				long arg3) {
+			
+			//if(arg2 != 0){
+			id_averia = arg2 + 1 + "";
+			id_incidencia = datosambiente.get(arg2).getId();
+			new IncidenciasAsyncTask(id_averia, sp_incidencia).execute();
+			//}
+		}
+
+		@Override
+		public void onNothingSelected(AdapterView<?> arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+		
+	}
 }

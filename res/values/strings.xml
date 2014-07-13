@@ -26,4 +26,8 @@
         <item >Redes</item>
         <item >Hardware</item>
     </string-array>
+    
+    <string-array name="sp_incidencias">
+        <item >Incidencias</item>
+    </string-array>
 </resources>
